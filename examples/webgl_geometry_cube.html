@@ -19,13 +19,15 @@
 		<script type="module">
 
 			import * as THREE from 'three';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+
 
 			let camera, scene, renderer;
 			let mesh;
 
 			init();
 
-			function init() {
+			async function init() {
 
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 100 );
 				camera.position.z = 2;
@@ -41,37 +43,30 @@
 				mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
 
+				const loader = new GLTFLoader();
+				let simpleGlb = null;
+				try {
+					simpleGlb = await loader.loadAsync( '../files/simple.glb' );
+				} catch (error) {
+					console.error('Error loading GLTF model: ', error);
+				}
+				scene.add(simpleGlb.scene);
+
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				// renderer.setAnimationLoop( animate );
 				document.body.appendChild( renderer.domElement );
 
-				//
-
 				window.addEventListener( 'resize', onWindowResize );
-
+				renderer.render( scene, camera );
 			}
 
 			function onWindowResize() {
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-
 				renderer.setSize( window.innerWidth, window.innerHeight );
-
 			}
 
-			// function animate() {
-
-			// 	mesh.rotation.x += 0.005;
-			// 	mesh.rotation.y += 0.01;
-
-				renderer.render( scene, camera );
-
-			// }
-
 		</script>
-
 	</body>
 </html>
